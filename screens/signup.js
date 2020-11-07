@@ -14,6 +14,7 @@ import {
 
 import fire from "../Firebase";
 import "firebase/firestore";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default class Signup extends Component {
   state = {
@@ -39,9 +40,9 @@ export default class Signup extends Component {
       this.setState({
         errorMessage: "Please fill in all the fields!",
       });
-    } else if (this.state.username.length != 7) {
+    } else if (this.state.username.length < 7) {
       this.setState({
-        errorMessage: "Username should be exactly 7 characters long!",
+        errorMessage: "Username should be at least 7 characters long!",
       });
     } else {
       fire
@@ -102,131 +103,137 @@ export default class Signup extends Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={{ marginLeft: "10%" }}>
-          <Text
-            style={{
-              fontWeight: "bold",
-              fontSize: 25,
-              marginTop: "15%",
-              marginBottom: "5%",
-              color: "white",
-            }}
-          >
-            Create an Account
-          </Text>
-          <Text style={{ marginVertical: 10, color: "red", fontSize: 15 }}>
-            {this.state.errorMessage}
-          </Text>
-          <View>
-            <Text style={{ fontWeight: "bold", color: "white" }}>
-              Email Address
-            </Text>
-            <TextInput
+        <ScrollView>
+          <View style={{ marginLeft: "10%" }}>
+            <Text
               style={{
-                height: 40,
-                borderColor: "white",
-                borderWidth: 2,
-                borderRadius: 5,
-                marginRight: 100,
-                marginVertical: "2%",
-                padding: "2%",
-                backgroundColor: "#272727",
+                fontWeight: "bold",
+                fontSize: 25,
+                marginTop: "15%",
+                marginBottom: "5%",
                 color: "white",
               }}
-              placeholder="Email"
-              placeholderTextColor="gray"
-              onChangeText={(val) => {
-                this.setState({ email: val });
-              }}
-              autoCapitalize="none"
-            ></TextInput>
-          </View>
-          <View style={{ marginVertical: "5%" }}>
-            <Text style={{ fontWeight: "bold", color: "white" }}>Username</Text>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: "white",
-                borderWidth: 2,
-                borderRadius: 5,
-                marginRight: 100,
-                marginVertical: "2%",
-                padding: "2%",
-                backgroundColor: "#272727",
-                color: "white",
-              }}
-              placeholder="Username"
-              onChangeText={(val) => {
-                this.setState({ username: val.toLowerCase() });
-              }}
-              maxLength={7}
-              placeholderTextColor="gray"
-              autoCapitalize="none"
-            ></TextInput>
-          </View>
-          <View style={{ marginVertical: "5%" }}>
-            <Text style={{ fontWeight: "bold", color: "white" }}>Password</Text>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: "white",
-                borderWidth: 2,
-                borderRadius: 5,
-                marginRight: 100,
-                marginVertical: "2%",
-                padding: "2%",
-                backgroundColor: "#272727",
-                color: "white",
-              }}
-              placeholder="Password"
-              placeholderTextColor="gray"
-              secureTextEntry={true}
-              onChangeText={(val) => {
-                this.setState({ password: val });
-              }}
-            ></TextInput>
-          </View>
-          <View style={{ marginVertical: "5%" }}>
-            <Text style={{ fontWeight: "bold", color: "white" }}>
-              Confirm Password
-            </Text>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: "white",
-                borderWidth: 2,
-                borderRadius: 5,
-                marginRight: 100,
-                marginVertical: "2%",
-                padding: "2%",
-                backgroundColor: "#272727",
-                color: "white",
-              }}
-              placeholder="Password"
-              secureTextEntry={true}
-              placeholderTextColor="gray"
-              onChangeText={(val) => {
-                this.setState({ confirmPassword: val });
-              }}
-            ></TextInput>
-          </View>
-          <View style={{ marginLeft: "15%" }}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#BB86FC",
-                borderRadius: 5,
-                height: "23%",
-                width: "50%",
-                justifyContent: "center",
-                alignItems: "center",
-                marginVertical: "7%",
-              }}
-              onPress={this.handleSignUp}
             >
-              <Text style={{ fontSize: 20 }}>SignUp</Text>
-            </TouchableOpacity>
+              Create an Account
+            </Text>
+            <Text style={{ marginVertical: 10, color: "red", fontSize: 15 }}>
+              {this.state.errorMessage}
+            </Text>
+            <View>
+              <Text style={{ fontWeight: "bold", color: "white" }}>
+                Email Address
+              </Text>
+              <TextInput
+                style={{
+                  height: 40,
+                  borderColor: "white",
+                  borderWidth: 2,
+                  borderRadius: 5,
+                  marginRight: 100,
+                  marginVertical: "2%",
+                  padding: "2%",
+                  backgroundColor: "#272727",
+                  color: "white",
+                }}
+                placeholder="Email"
+                placeholderTextColor="gray"
+                onChangeText={(val) => {
+                  this.setState({ email: val });
+                }}
+                autoCapitalize="none"
+              ></TextInput>
+            </View>
+            <View style={{ marginVertical: "5%" }}>
+              <Text style={{ fontWeight: "bold", color: "white" }}>
+                Username
+              </Text>
+              <TextInput
+                style={{
+                  height: 40,
+                  borderColor: "white",
+                  borderWidth: 2,
+                  borderRadius: 5,
+                  marginRight: 100,
+                  marginVertical: "2%",
+                  padding: "2%",
+                  backgroundColor: "#272727",
+                  color: "white",
+                }}
+                placeholder="Username"
+                onChangeText={(val) => {
+                  this.setState({ username: val.toLowerCase() });
+                }}
+                maxLength={10}
+                placeholderTextColor="gray"
+                autoCapitalize="none"
+              ></TextInput>
+            </View>
+            <View style={{ marginVertical: "5%" }}>
+              <Text style={{ fontWeight: "bold", color: "white" }}>
+                Password
+              </Text>
+              <TextInput
+                style={{
+                  height: 40,
+                  borderColor: "white",
+                  borderWidth: 2,
+                  borderRadius: 5,
+                  marginRight: 100,
+                  marginVertical: "2%",
+                  padding: "2%",
+                  backgroundColor: "#272727",
+                  color: "white",
+                }}
+                placeholder="Password"
+                placeholderTextColor="gray"
+                secureTextEntry={true}
+                onChangeText={(val) => {
+                  this.setState({ password: val });
+                }}
+              ></TextInput>
+            </View>
+            <View style={{ marginVertical: "5%" }}>
+              <Text style={{ fontWeight: "bold", color: "white" }}>
+                Confirm Password
+              </Text>
+              <TextInput
+                style={{
+                  height: 40,
+                  borderColor: "white",
+                  borderWidth: 2,
+                  borderRadius: 5,
+                  marginRight: 100,
+                  marginVertical: "2%",
+                  padding: "2%",
+                  backgroundColor: "#272727",
+                  color: "white",
+                }}
+                placeholder="Password"
+                secureTextEntry={true}
+                placeholderTextColor="gray"
+                onChangeText={(val) => {
+                  this.setState({ confirmPassword: val });
+                }}
+              ></TextInput>
+            </View>
+            <View style={{ marginLeft: "15%" }}>
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#BB86FC",
+                  borderRadius: 5,
+                  height: "23%",
+                  width: "50%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginVertical: "7%",
+                }}
+                onPress={this.handleSignUp}
+              >
+                <Text style={{ fontSize: 20 }}>SignUp</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     );
   }

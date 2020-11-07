@@ -41,6 +41,7 @@ export default class Home extends Component {
     music: 0,
     books: 0,
     test: "",
+    search: "",
   };
 
   componentDidMount() {
@@ -50,20 +51,8 @@ export default class Home extends Component {
         this.fetchGameInfo(user);
       }
     });
-
-    // this.willFocusSubscription = this.props.navigation.addListener(
-    //   "willFocus",
-    //   () => {
-    //     fire.auth().onAuthStateChanged((user) => {
-    //       if (user != null) {
-    //         this.fetchGameInfo(user);
-    //       }
-    //     });
-    //   }
-    // );
   }
   componentWillUnmount() {
-    // this.willFocusSubscription.remove();
     this._isMounted = false;
   }
 
@@ -215,14 +204,18 @@ export default class Home extends Component {
           <Item>
             <Icon name="ios-people" />
             <Input
-              placeholder="Search for friends"
-              onChangeText={() => {}}
+              placeholder="Search friends"
+              onChangeText={(val) => {
+                this.setState({
+                  search: val,
+                });
+              }}
               autoCapitalize="none"
             />
             <Icon
               name="ios-search"
               onPress={() => {
-                Alert.alert("Search Clicked!");
+                Alert.alert(this.state.search);
               }}
             />
           </Item>
