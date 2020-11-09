@@ -1,28 +1,15 @@
-import React, { useState, useEffect, Component } from "react";
-import {
-  Alert,
-  Button,
-  StyleSheet,
-  Text,
-  View,
-  ActivityIndicator,
-  SectionList,
-  TouchableOpacity,
-} from "react-native";
+import React, { Component } from "react";
+import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
-import { TextInput } from "react-native-gesture-handler";
 import fire from "../Firebase";
 import "firebase/firestore";
 import { FloatingAction } from "react-native-floating-action";
-import Loading from "../Loading";
-import Expo from "expo";
 
 import {
   Container,
   Header,
   Content,
   Spinner,
-  ProgressBar,
   Card,
   CardItem,
   Body,
@@ -204,7 +191,7 @@ export default class Home extends Component {
           <Item>
             <Icon name="ios-people" />
             <Input
-              placeholder="Search friends"
+              placeholder="Search friends by username"
               onChangeText={(val) => {
                 this.setState({
                   search: val,
@@ -215,7 +202,9 @@ export default class Home extends Component {
             <Icon
               name="ios-search"
               onPress={() => {
-                Alert.alert(this.state.search);
+                this.props.navigation.navigate("Search", {
+                  uname: this.state.search,
+                });
               }}
             />
           </Item>

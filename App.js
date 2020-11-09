@@ -1,31 +1,13 @@
 import React, { useState, useEffect, Component } from "react";
-import { StyleSheet, View, Image, SafeAreaView, Alert } from "react-native";
+import { StyleSheet, View, Alert } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import { BarCodeScanner } from "expo-barcode-scanner";
 
-import {
-  Container,
-  Header,
-  Content,
-  Spinner,
-  ProgressBar,
-  Card,
-  CardItem,
-  Body,
-  Item,
-  Input,
-  Button,
-} from "native-base";
+import { Button } from "native-base";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import Home from "./screens/Home";
 import LoginSignup from "./screens/LoginSignup";
@@ -38,24 +20,16 @@ import Music from "./screens/Music";
 import Books from "./screens/Books";
 import Library from "./screens/library";
 import { DrawerContent } from "./screens/DrawerContent";
+import Search from "./screens/search";
+import Requests from "./screens/requests";
+import Friends from "./screens/friends";
 
 import fire from "./Firebase";
 
 import { LogBox } from "react-native";
 import _ from "lodash";
 
-import {
-  Avatar,
-  Title,
-  Caption,
-  Paragraph,
-  Drawer,
-  Text,
-  TouchableRipple,
-  Switch,
-} from "react-native-paper";
-
-import { color } from "react-native-reanimated";
+import { Text } from "react-native-paper";
 
 LogBox.ignoreLogs(["Setting a timer"]);
 const _console = _.clone(console);
@@ -82,26 +56,6 @@ handleDeleteAccount = () => {
       Alert.alert(err.toString());
     });
 };
-
-// function CustomDrawerContent(props) {
-//   return (
-//     <DrawerContentScrollView {...props}>
-//       <DrawerItemList {...props} />
-//       <DrawerItem label="Sign out" onPress={handleSignout} />
-//       <DrawerItem label="Delete Account" onPress={handleDeleteAccount} />
-//     </DrawerContentScrollView>
-//   );
-// }
-
-// function drawer() {
-//   return (
-//     <Drawer.Navigator
-//       drawerContent={(props) => <CustomDrawerContent {...props} />}
-//     >
-//       <Drawer.Screen name="Home" component={Home}></Drawer.Screen>
-//     </Drawer.Navigator>
-//   );
-// }
 
 function ScanScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
@@ -252,6 +206,30 @@ function homeStack() {
         <Stack.Screen
           name="Scan"
           component={ScanScreen}
+          options={{
+            headerTintColor: "#ffffff",
+            headerStyle: { backgroundColor: "#272727" },
+          }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={Search}
+          options={{
+            headerTintColor: "#ffffff",
+            headerStyle: { backgroundColor: "#272727" },
+          }}
+        />
+        <Stack.Screen
+          name="Friend Requests"
+          component={Requests}
+          options={{
+            headerTintColor: "#ffffff",
+            headerStyle: { backgroundColor: "#272727" },
+          }}
+        />
+        <Stack.Screen
+          name="Friends"
+          component={Friends}
           options={{
             headerTintColor: "#ffffff",
             headerStyle: { backgroundColor: "#272727" },

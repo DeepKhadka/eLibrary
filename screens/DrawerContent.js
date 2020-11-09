@@ -1,70 +1,37 @@
-import React from "react";
-import { View, StyleSheet, SafeAreaView } from "react-native";
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItemList,
-  DrawerItem,
-} from "@react-navigation/drawer";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet } from "react-native";
+import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 
-import {
-  Avatar,
-  Title,
-  Caption,
-  Paragraph,
-  Drawer,
-  Text,
-  TouchableRipple,
-  Switch,
-} from "react-native-paper";
+import { Title, Drawer } from "react-native-paper";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import fire from "../Firebase";
 
 export function DrawerContent(props) {
+  // const [username, setUsername] = useState("");
+
+  // useEffect(() => {
+  //   fire
+  //     .firestore()
+  //     .collection("USERS")
+  //     .doc(fire.auth().currentUser.uid.toString())
+  //     .get()
+  //     .then((doc) => {
+  //       setUsername(doc.data().username);
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //     });
+  // }, []);
+
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props}>
         <View style={styles.drawerContent}></View>
         <View style={styles.drawerContent}>
           <View style={styles.userInfoSection}>
-            <Avatar.Image
-              source={{
-                uri: "https://api.adorable.io/avatars/50/abott@adorable.png",
-              }}
-              size={50}
-            />
             <View style={{ marginLeft: 15, flexDirection: "column" }}>
               <Title style={styles.title}>Username</Title>
-            </View>
-          </View>
-          <View style={styles.column}>
-            <View style={styles.row}>
-              <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]}>
-                  80
-                </Paragraph>
-                <Caption style={styles.caption}>Games</Caption>
-              </View>
-              <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]}>
-                  100
-                </Paragraph>
-                <Caption style={styles.caption}>Movies</Caption>
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]}>
-                  100
-                </Paragraph>
-                <Caption style={styles.caption}>Music</Caption>
-              </View>
-              <View style={styles.section}>
-                <Paragraph style={[styles.paragraph, styles.caption]}>
-                  100
-                </Paragraph>
-                <Caption style={styles.caption}>Books</Caption>
-              </View>
             </View>
           </View>
         </View>
@@ -72,7 +39,7 @@ export function DrawerContent(props) {
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="home-outline" color={color} size={size} />
+              <Icon name="home" color={color} size={size} />
             )}
             label="Home"
             onPress={() => {
@@ -81,10 +48,28 @@ export function DrawerContent(props) {
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="account-outline" color={color} size={size} />
+              <FontAwesome name="id-card" color={color} size={size} />
             )}
             label="Profile"
             onPress={() => {}}
+          />
+          <DrawerItem
+            icon={({ color, size }) => (
+              <Icon name="account-multiple-plus" color={color} size={size} />
+            )}
+            label="Friend Requests"
+            onPress={() => {
+              props.navigation.navigate("Friend Requests");
+            }}
+          />
+          <DrawerItem
+            icon={({ color, size }) => (
+              <Icon name="account-group" color={color} size={size} />
+            )}
+            label="Friends"
+            onPress={() => {
+              props.navigation.navigate("Friends");
+            }}
           />
         </Drawer.Section>
       </DrawerContentScrollView>
