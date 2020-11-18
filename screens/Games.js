@@ -11,21 +11,28 @@ import {
   Alert,
   ScrollView,
   Switch,
+  ToastAndroid,
+  KeyboardAvoidingView,
 } from "react-native";
+import { Rating } from "react-native-ratings";
+import FloatingTextInput from "./Floating";
+import FloatingTextBox from "./FloatingScan";
+import FloatingTextError from "./FloatingTextError";
 
 import fire from "../Firebase";
 import "firebase/firestore";
 
 export default class Games extends Component {
   state = {
-    title: "",
-    company: "",
+    title: this.props.route.params.title,
+    company: this.props.route.params.brand,
     genre: "",
-    year: 0,
-    platform: "",
+    year: "",
+    platform: this.props.route.params.platform,
     description: "",
     public: false,
     errorMessage: "",
+    rating: 0,
   };
 
   handleAdd = () => {
@@ -34,7 +41,13 @@ export default class Games extends Component {
       this.state.company == "" ||
       this.state.platform == ""
     ) {
-      Alert.alert("Please fill all the required (*) fields.");
+      this.setState({
+        errorMessage: "Please fill in all the required fields.",
+      });
+    } else if (this.state.rating < 1) {
+      this.setState({
+        errorMessage: "Rating cannot be less than 1.",
+      });
     } else {
       fire
         .firestore()
@@ -46,13 +59,14 @@ export default class Games extends Component {
           title: this.state.title,
           company: this.state.company,
           genre: this.state.genre,
-          year: this.state.year,
+          year: Number(this.state.year),
           platform: this.state.platform,
           description: this.state.description,
           public: this.state.public,
+          rating: this.state.rating,
         })
         .then(() => {
-          Alert.alert("Game successfully added!");
+          ToastAndroid.show("Game successfully added!", ToastAndroid.SHORT);
           this.props.navigation.navigate("Home");
         })
         .catch((err) => {
@@ -63,190 +77,184 @@ export default class Games extends Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView>
-          <View style={{ marginLeft: "10%" }}>
-            <Text style={{ marginVertical: 10, color: "yellow", fontSize: 15 }}>
-              {this.state.errorMessage}
-            </Text>
-            <View>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 15, color: "white" }}
-              >
-                Title *
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+        }}
+        enabled={true}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          style={{ flex: 1 }}
+          enabled={true}
+        >
+          <View
+            style={{
+              flex: 1,
+              justifyContent: "flex-end",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{ width: "80%", height: 60, justifyContent: "center" }}
+            >
+              <Text style={{ color: "red", fontSize: 15 }}>
+                {this.state.errorMessage}
               </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Title"
+            </View>
+          </View>
+          <View style={{ flex: 10, alignItems: "center" }}>
+            {this.props.route.params.title == "" ? (
+              <FloatingTextError
+                label="Title"
                 placeholderTextColor="gray"
                 onChangeText={(val) => {
                   this.setState({
                     title: val.toLowerCase().trim(),
                   });
                 }}
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 15, color: "white" }}
-              >
-                Company *
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
+                test={this.state.title}
+              ></FloatingTextError>
+            ) : (
+              <FloatingTextError
+                label="Title"
+                placeholderTextColor="gray"
+                onChangeText={(val) => {
+                  this.setState({
+                    title: val.toLowerCase().trim(),
+                  });
                 }}
-                placeholder="Company"
+                defaultValue={this.props.route.params.title}
+                test={this.state.title}
+              ></FloatingTextError>
+            )}
+
+            <View style={{ height: 30 }}></View>
+            {this.props.route.params.brand == "" ? (
+              <FloatingTextError
+                label="Company"
+                placeholderTextColor="gray"
+                test={this.state.company}
+                onChangeText={(val) => {
+                  this.setState({
+                    company: val.toLowerCase().trim(),
+                  });
+                }}
+              ></FloatingTextError>
+            ) : (
+              <FloatingTextError
+                test={this.state.company}
+                label="Company"
+                value={this.state.company}
                 placeholderTextColor="gray"
                 onChangeText={(val) => {
                   this.setState({
                     company: val.toLowerCase().trim(),
                   });
                 }}
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 15, color: "white" }}
-              >
-                Genre
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Genre"
-                placeholderTextColor="gray"
-                onChangeText={(val) => {
-                  this.setState({
-                    genre: val.toLowerCase().trim(),
-                  });
-                }}
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 15, color: "white" }}
-              >
-                Year Released
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Year"
-                placeholderTextColor="gray"
-                maxLength={4}
-                keyboardType="number-pad"
-                onChangeText={(val) => {
-                  this.setState({
-                    year: val,
-                  });
-                }}
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 15, color: "white" }}
-              >
-                Platform *
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Platform"
+                defaultValue={this.props.route.params.brand}
+              ></FloatingTextError>
+            )}
+            <View style={{ height: 30 }}></View>
+            <FloatingTextBox
+              label="Genre"
+              test={this.state.genre}
+              placeholderTextColor="gray"
+              onChangeText={(val) => {
+                this.setState({
+                  genre: val.toLowerCase().trim(),
+                });
+              }}
+            ></FloatingTextBox>
+            <View style={{ height: 30 }}></View>
+            <FloatingTextBox
+              label="Year"
+              test={this.state.year}
+              placeholderTextColor="gray"
+              maxLength={4}
+              keyboardType="number-pad"
+              onChangeText={(val) => {
+                this.setState({
+                  year: val,
+                });
+              }}
+            ></FloatingTextBox>
+            <View style={{ height: 30 }}></View>
+            {this.props.route.params.platform == "" ? (
+              <FloatingTextError
+                label="Platform"
+                test={this.state.platform}
                 placeholderTextColor="gray"
                 onChangeText={(val) => {
                   this.setState({
                     platform: val.toLowerCase().trim(),
                   });
                 }}
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text
-                style={{ fontWeight: "bold", fontSize: 15, color: "white" }}
-              >
-                Description
-              </Text>
-              <TextInput
-                style={{
-                  height: 150,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Description"
+              ></FloatingTextError>
+            ) : (
+              <FloatingTextError
+                label="Platform"
                 placeholderTextColor="gray"
-                multiline={true}
                 onChangeText={(val) => {
                   this.setState({
-                    description: val.trim(),
+                    platform: val.toLowerCase().trim(),
                   });
                 }}
-              ></TextInput>
-              <View
+                test={this.state.platform}
+                defaultValue={this.props.route.params.platform}
+              ></FloatingTextError>
+            )}
+            <View style={{ height: 30 }}></View>
+            <FloatingTextBox
+              label="Description"
+              test={this.state.description}
+              placeholderTextColor="gray"
+              multiline={true}
+              onChangeText={(val) => {
+                this.setState({
+                  description: val.trim(),
+                });
+              }}
+            ></FloatingTextBox>
+            <View style={{ height: 30 }}></View>
+            <View style={{ width: "80%", alignItems: "flex-start" }}>
+              <Rating
+                type="custom"
+                ratingBackgroundColor="gray"
+                ratingCount={5}
+                fractions={1}
+                startingValue={0}
+                imageSize={30}
+                onFinishRating={(rating) => {
+                  this.setState({
+                    rating: rating,
+                  });
+                }}
+                showRating={true}
+                style={{ backgroundColor: "black" }}
+              />
+            </View>
+            <View style={{ height: 30 }}></View>
+            <View
+              style={{
+                width: "80%",
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}
+            >
+              <Text
                 style={{
-                  marginTop: "5%",
-                  flexDirection: "row",
-                  justifyContent: "flex-start",
+                  fontSize: 15,
+                  flex: 1,
+                  fontWeight: "bold",
+                  color: "white",
                 }}
               >
-                <Text
-                  style={{ fontSize: 15, fontWeight: "bold", color: "white" }}
-                >
-                  Make Item Public
-                </Text>
+                Make Item Public
+              </Text>
+              <View style={{ flex: 1 }}>
                 <Switch
-                  style={{ marginLeft: "10%" }}
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
                   thumbColor={this.state.public ? "#f5dd4b" : "#f4f3f4"}
                   onValueChange={() => {
@@ -258,26 +266,25 @@ export default class Games extends Component {
                 />
               </View>
             </View>
-            <View style={{ marginLeft: "15%" }}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#BB86FC",
-                  borderRadius: 5,
-                  height: "20%",
-                  width: "50%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginVertical: "5%",
-                }}
-                onPress={this.handleAdd}
-              >
-                <Text style={{ fontSize: 20 }}>ADD</Text>
-              </TouchableOpacity>
-              <View style={{ marginVertical: "5%" }}></View>
-            </View>
+            <View style={{ height: 30 }}></View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#BB86FC",
+                borderRadius: 5,
+                height: "5%",
+                width: "80%",
+                justifyContent: "center",
+                alignItems: "center",
+                marginVertical: "5%",
+              }}
+              onPress={this.handleAdd}
+            >
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>ADD</Text>
+            </TouchableOpacity>
+            <View style={{ height: 50 }}></View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 }

@@ -1,9 +1,20 @@
 import React, { Component } from "react";
-import { Alert, StyleSheet, Text, View, TouchableOpacity } from "react-native";
-
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  RefreshControl,
+  StatusBar,
+} from "react-native";
 import fire from "../Firebase";
 import "firebase/firestore";
 import { FloatingAction } from "react-native-floating-action";
+import { Badge } from "native-base";
 
 import {
   Container,
@@ -29,6 +40,7 @@ export default class Home extends Component {
     books: 0,
     test: "",
     search: "",
+    refreshing: false,
   };
 
   componentDidMount() {
@@ -128,6 +140,7 @@ export default class Home extends Component {
               this.setState({
                 books: this.state.books + 1,
                 loading: false,
+                refreshing: false,
               });
             }
           });
@@ -135,6 +148,7 @@ export default class Home extends Component {
           if (this._isMounted) {
             this.setState({
               loading: false,
+              refreshing: false,
             });
           }
         }
@@ -144,6 +158,20 @@ export default class Home extends Component {
         Alert.alert(err.toString());
       });
   }
+  onRefresh = () => {
+    this.setState({
+      username: "",
+
+      game: 0,
+      movies: 0,
+      music: 0,
+      books: 0,
+      test: "",
+      search: "",
+      refreshing: true,
+    });
+    this.componentDidMount();
+  };
 
   render() {
     const actions = [
@@ -163,146 +191,275 @@ export default class Home extends Component {
       },
     ];
     return this.state.loading ? (
-      <Container>
+      <Container style={{ backgroundColor: "black" }}>
         <Content>
           <Spinner color="green" />
         </Content>
       </Container>
     ) : (
-      <Container>
-        <Header
-          searchBar
-          rounded
-          autoCorrect={false}
-          style={{
-            justifyContent: "flex-start",
-            alignItems: "center",
-            backgroundColor: "#272727",
-          }}
-        >
-          <Icon
-            name="menu"
-            onPress={() => {
-              this.props.navigation.openDrawer();
-            }}
-            style={{ fontSize: 35, color: "white" }}
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this.onRefresh}
           />
-          <View style={{ marginHorizontal: "1%" }}></View>
-          <Item>
-            <Icon name="ios-people" />
-            <Input
-              placeholder="Search friends by username"
-              onChangeText={(val) => {
-                this.setState({
-                  search: val,
-                });
-              }}
-              autoCapitalize="none"
-            />
-            <Icon
-              name="ios-search"
-              onPress={() => {
-                this.props.navigation.navigate("Search", {
-                  uname: this.state.search,
-                });
-              }}
-            />
-          </Item>
-        </Header>
+        }
+      >
         <Container>
-          <Content style={{ backgroundColor: "black" }}>
-            <TouchableOpacity
+          <Header
+            searchBar
+            rounded
+            autoCorrect={false}
+            style={{
+              justifyContent: "flex-start",
+              alignItems: "center",
+              backgroundColor: "#272727",
+            }}
+          >
+            <Icon
+              name="menu"
               onPress={() => {
-                this.props.navigation.navigate("Library", { dbName: "Games" });
+                this.props.navigation.openDrawer();
               }}
-            >
-              <Card style={{ borderColor: "white" }}>
-                <CardItem header>
-                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                    Games
-                  </Text>
-                </CardItem>
-                <CardItem>
-                  <Body>
-                    <Text style={{ fontSize: 20 }}>
-                      You have {this.state.game} games in your library.
-                    </Text>
-                  </Body>
-                </CardItem>
-              </Card>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate("Library", { dbName: "Movies" });
-              }}
-            >
-              <Card style={{ borderColor: "darkgreen" }}>
-                <CardItem header>
-                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                    Movies
-                  </Text>
-                </CardItem>
-                <CardItem>
-                  <Body>
-                    <Text style={{ fontSize: 20 }}>
-                      You have {this.state.movies} movies in your library.
-                    </Text>
-                  </Body>
-                </CardItem>
-              </Card>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate("Library", { dbName: "Music" });
-              }}
-            >
-              <Card style={{ borderColor: "darkgreen" }}>
-                <CardItem header>
-                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                    Music
-                  </Text>
-                </CardItem>
-                <CardItem>
-                  <Body>
-                    <Text style={{ fontSize: 20 }}>
-                      You have {this.state.music} music in your library.
-                    </Text>
-                  </Body>
-                </CardItem>
-              </Card>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                this.props.navigation.navigate("Library", { dbName: "Books" });
-              }}
-            >
-              <Card style={{ borderColor: "darkgreen" }}>
-                <CardItem header>
-                  <Text style={{ fontSize: 25, fontWeight: "bold" }}>
-                    Books
-                  </Text>
-                </CardItem>
-                <CardItem>
-                  <Body>
-                    <Text style={{ fontSize: 20 }}>
-                      You have {this.state.books} books in your library.
-                    </Text>
-                  </Body>
-                </CardItem>
-              </Card>
-            </TouchableOpacity>
-          </Content>
+              style={{ fontSize: 35, color: "white" }}
+            />
+            <View style={{ marginHorizontal: "1%" }}></View>
+            <Item>
+              <Icon name="ios-people" />
+              <Input
+                placeholder="Search friends by username"
+                onChangeText={(val) => {
+                  this.setState({
+                    search: val,
+                  });
+                }}
+                autoCapitalize="none"
+                returnKeyType="search"
+                onSubmitEditing={() => {
+                  this.props.navigation.navigate("Search", {
+                    uname: this.state.search.trim(),
+                  });
+                }}
+              />
+              <Icon name="ios-search" />
+            </Item>
+          </Header>
+
+          {this.state.refreshing ? (
+            <Container style={{ backgroundColor: "black" }}>
+              <Content>
+                <Spinner color="green" />
+              </Content>
+            </Container>
+          ) : (
+            <View style={{ backgroundColor: "black", flex: 1 }}>
+              <View
+                style={{
+                  flex: 1,
+
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Text
+                  style={{ color: "white", fontSize: 20, fontWeight: "bold" }}
+                >
+                  Dashboard
+                </Text>
+              </View>
+              <View style={{ flex: 12 }}>
+                <View style={{ flex: 1, flexDirection: "row" }}>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      this.props.navigation.navigate("Library", {
+                        dbName: "Games",
+                      });
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: "50%",
+                        width: "80%",
+                        backgroundColor: "#272727",
+                        borderRadius: 15,
+                        alignItems: "center",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <Badge danger>
+                        <Text style={{ color: "white", fontSize: 15 }}>
+                          {this.state.game}
+                        </Text>
+                      </Badge>
+
+                      <View></View>
+                      <Image
+                        source={require("../assets/game.png")}
+                        style={{ marginTop: "5%" }}
+                      />
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 25,
+                          fontWeight: "bold",
+                          marginVertical: "5%",
+                        }}
+                      >
+                        Games
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      this.props.navigation.navigate("Library", {
+                        dbName: "Movies",
+                      });
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: "50%",
+                        width: "80%",
+                        backgroundColor: "#272727",
+                        borderRadius: 15,
+                        alignItems: "center",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <Badge danger>
+                        <Text style={{ color: "white", fontSize: 15 }}>
+                          {this.state.movies}
+                        </Text>
+                      </Badge>
+                      <Image
+                        source={require("../assets/movies.png")}
+                        style={{ marginTop: "5%" }}
+                      />
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 25,
+                          fontWeight: "bold",
+                          marginVertical: "5%",
+                        }}
+                      >
+                        Movies
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                <View style={{ flex: 1, flexDirection: "row" }}>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      this.props.navigation.navigate("Library", {
+                        dbName: "Music",
+                      });
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: "50%",
+                        width: "80%",
+                        backgroundColor: "#272727",
+                        borderRadius: 15,
+                        alignItems: "center",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <Badge danger>
+                        <Text style={{ color: "white", fontSize: 15 }}>
+                          {this.state.music}
+                        </Text>
+                      </Badge>
+                      <Image
+                        source={require("../assets/music.png")}
+                        style={{ marginTop: "5%" }}
+                      />
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 25,
+                          fontWeight: "bold",
+                          marginVertical: "5%",
+                        }}
+                      >
+                        Music
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{
+                      flex: 1,
+                      alignItems: "center",
+                    }}
+                    onPress={() => {
+                      this.props.navigation.navigate("Library", {
+                        dbName: "Books",
+                      });
+                    }}
+                  >
+                    <View
+                      style={{
+                        height: "50%",
+                        width: "80%",
+                        backgroundColor: "#272727",
+                        borderRadius: 15,
+                        alignItems: "center",
+                        justifyContent: "space-evenly",
+                      }}
+                    >
+                      <Badge danger>
+                        <Text style={{ color: "white", fontSize: 15 }}>
+                          {this.state.books}
+                        </Text>
+                      </Badge>
+                      <Image
+                        source={require("../assets/books.png")}
+                        style={{ marginTop: "5%" }}
+                      />
+                      <Text
+                        style={{
+                          color: "white",
+                          fontSize: 25,
+                          fontWeight: "bold",
+                          marginVertical: "5%",
+                        }}
+                      >
+                        Books
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          )}
+
+          <FloatingAction
+            actions={actions}
+            color="#BB86FC"
+            onPressItem={(name) => {
+              name == "bt_manual_entry"
+                ? this.props.navigation.navigate("Add to your Library")
+                : this.props.navigation.navigate("Scan");
+            }}
+          />
         </Container>
-        <FloatingAction
-          actions={actions}
-          color="#BB86FC"
-          onPressItem={(name) => {
-            name == "bt_manual_entry"
-              ? this.props.navigation.navigate("Add to your Library")
-              : this.props.navigation.navigate("Scan");
-          }}
-        />
-      </Container>
+      </ScrollView>
     );
   }
 }

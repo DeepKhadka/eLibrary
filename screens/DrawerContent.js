@@ -1,72 +1,61 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 
-import { Title, Drawer } from "react-native-paper";
+import { Drawer } from "react-native-paper";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import fire from "../Firebase";
 
 export function DrawerContent(props) {
-  // const [username, setUsername] = useState("");
-
-  // useEffect(() => {
-  //   fire
-  //     .firestore()
-  //     .collection("USERS")
-  //     .doc(fire.auth().currentUser.uid.toString())
-  //     .get()
-  //     .then((doc) => {
-  //       setUsername(doc.data().username);
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //     });
-  // }, []);
-
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "black" }}>
       <DrawerContentScrollView {...props}>
-        <View style={styles.drawerContent}></View>
-        <View style={styles.drawerContent}>
-          <View style={styles.userInfoSection}>
-            <View style={{ marginLeft: 15, flexDirection: "column" }}>
-              <Title style={styles.title}>Username</Title>
-            </View>
-          </View>
+        <View>
+          <Image
+            source={require("../assets/logo.png")}
+            style={{
+              width: "100%",
+            }}
+          />
         </View>
 
         <Drawer.Section style={styles.drawerSection}>
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="home" color={color} size={size} />
+              <Icon name="home" color="white" size={size} />
             )}
             label="Home"
+            labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
             onPress={() => {
               props.navigation.navigate("Home");
             }}
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <FontAwesome name="id-card" color={color} size={size} />
+              <FontAwesome name="id-card" color="white" size={size} />
             )}
-            label="Profile"
-            onPress={() => {}}
+            label="Public Profile"
+            labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
+            onPress={() => {
+              props.navigation.navigate("Profile");
+            }}
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="account-multiple-plus" color={color} size={size} />
+              <Icon name="account-multiple-plus" color="white" size={size} />
             )}
             label="Friend Requests"
+            labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
             onPress={() => {
               props.navigation.navigate("Friend Requests");
             }}
           />
           <DrawerItem
             icon={({ color, size }) => (
-              <Icon name="account-group" color={color} size={size} />
+              <Icon name="account-group" color="white" size={size} />
             )}
             label="Friends"
+            labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
             onPress={() => {
               props.navigation.navigate("Friends");
             }}
@@ -76,16 +65,18 @@ export function DrawerContent(props) {
       <Drawer.Section style={styles.bottomDrawerSection}>
         <DrawerItem
           icon={({ color, size }) => (
-            <Icon name="exit-to-app" color={color} size={size} />
+            <Icon name="exit-to-app" color="white" size={size} />
           )}
           label="Sign Out"
+          labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
           onPress={handleSignout}
         />
         <DrawerItem
           icon={({ color, size }) => (
-            <FontAwesome name="trash" color={color} size={size} />
+            <FontAwesome name="trash" color="white" size={size} />
           )}
           label="Delete Account"
+          labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
           onPress={handleDeleteAccount}
         />
       </Drawer.Section>
@@ -101,9 +92,10 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   title: {
-    fontSize: 16,
-    marginTop: 3,
+    fontSize: 30,
+    marginVertical: "10%",
     fontWeight: "bold",
+    fontStyle: "italic",
   },
   caption: {
     fontSize: 14,

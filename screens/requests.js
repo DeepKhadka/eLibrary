@@ -8,9 +8,10 @@ import {
   Alert,
   FlatList,
 } from "react-native";
-import { Container, Content, Spinner } from "native-base";
+import { Container, Content, Spinner, Thumbnail } from "native-base";
 import fire from "../Firebase";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
+import PP from "./profileplaceholder";
 
 export default class Requests extends Component {
   _isMounted = false;
@@ -96,7 +97,11 @@ export default class Requests extends Component {
               .get()
               .then(
                 function (snap) {
-                  data.push({ username: snap.data().username, ID: snap.id });
+                  data.push({
+                    username: snap.data().username,
+                    ID: snap.id,
+                    profileUri: snap.data().profileUri,
+                  });
                 },
                 function (error) {
                   Alert.alert(error.toString());
@@ -128,7 +133,7 @@ export default class Requests extends Component {
   emptyComponent = () => {
     return (
       <View style={{ flex: 1, alignItems: "center" }}>
-        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold",color:"white" }}>
           Nothing here, come back later...
         </Text>
       </View>
@@ -146,7 +151,7 @@ export default class Requests extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1,backgroundColor:"black" }}>
         {this.state.data ? (
           <FlatList
             data={this.state.data}
@@ -154,16 +159,32 @@ export default class Requests extends Component {
               <View style={styles.card}>
                 <View style={styles.cardContent}>
                   <View style={{ flexDirection: "row" }}>
-                    <FontAwesome name="user" size={20} />
-                    <Text
-                      style={{
-                        marginLeft: "5%",
-                        fontSize: 20,
-                        fontWeight: "bold",
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.props.navigation.navigate("Profile", {
+                          ID: item.ID,
+                        });
                       }}
+                      style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                      {item.username}
-                    </Text>
+                      <Thumbnail
+                        style={{ borderWidth: 1, borderColor: "white" }}
+                        source={{
+                          uri: item.profileUri ? item.profileUri : PP,
+                        }}
+                      />
+
+                      <Text
+                        style={{
+                          marginLeft: "5%",
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          color:"white"
+                        }}
+                      >
+                        {item.username}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
 
                   <View
@@ -171,6 +192,7 @@ export default class Requests extends Component {
                       flexDirection: "row",
                       justifyContent: "space-between",
                       marginRight: "5%",
+                      alignItems: "flex-end",
                     }}
                   >
                     <View>
@@ -188,7 +210,7 @@ export default class Requests extends Component {
                       >
                         <FontAwesome name="check" size={25} color="white" />
                       </TouchableOpacity>
-                      <Text style={{ fontSize: 15 }}>Accept</Text>
+                      <Text style={{ fontSize: 15,color:"white" }}>Accept</Text>
                     </View>
                     <View>
                       <TouchableOpacity
@@ -203,7 +225,7 @@ export default class Requests extends Component {
                       >
                         <FontAwesome name="times" size={25} color="white" />
                       </TouchableOpacity>
-                      <Text style={{ fontSize: 15 }}>Decline</Text>
+                      <Text style={{ fontSize: 15,color:"white" }}>Decline</Text>
                     </View>
                   </View>
                 </View>
@@ -215,7 +237,7 @@ export default class Requests extends Component {
             onRefresh={this.handleRefresh}
           />
         ) : (
-          <Container>
+          <Container style={{backgroundColor:"black"}}>
             <Content>
               <Spinner color="green" />
             </Content>
@@ -228,11 +250,11 @@ export default class Requests extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 6,
+    borderRadius: 10,
     elevation: 4,
-    backgroundColor: "#fff",
+    backgroundColor: "#272727",
     shadowOffset: { width: 1, height: 1 },
-    shadowColor: "#333",
+    shadowColor: "white",
     shadowOpacity: 0.5,
     shadowRadius: 5,
     marginHorizontal: "2%",

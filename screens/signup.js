@@ -10,11 +10,18 @@ import {
   TextInput,
   Alert,
   FlatList,
+  ScrollView,
+  KeyboardAvoidingView,
+  Modal,
 } from "react-native";
+import { Thumbnail } from "native-base";
 
 import fire from "../Firebase";
 import "firebase/firestore";
-import { ScrollView } from "react-native-gesture-handler";
+
+import * as ImagePicker from "expo-image-picker";
+import PP from "./profileplaceholder";
+import FloatingTextError from "./FloatingTextError";
 
 export default class Signup extends Component {
   state = {
@@ -24,12 +31,13 @@ export default class Signup extends Component {
     confirmPassword: "",
     errorMessage: "",
     errorUsername: 0,
+    avatar: null,
   };
 
   handlefirebasesignup = () => {
     if (this.state.password != this.state.confirmPassword) {
       this.setState({
-        errorMessage: "Password do not match!",
+        errorMessage: "Passwords do not match!",
       });
     } else if (
       this.state.email == "" ||
@@ -56,6 +64,7 @@ export default class Signup extends Component {
             .set({
               email: this.state.email,
               username: this.state.username,
+              profileUri: this.state.avatar,
             });
         })
         .then(() => {
@@ -80,6 +89,24 @@ export default class Signup extends Component {
     }
   };
 
+  pickImagehandler = async () => {
+    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+
+    if (pickerResult.cancelled === true) {
+      return;
+    }
+    this.setState({
+      avatar: pickerResult.uri,
+    });
+  };
+
   handleSignUp = () => {
     fire
       .firestore()
@@ -102,139 +129,130 @@ export default class Signup extends Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView>
-          <View style={{ marginLeft: "10%" }}>
-            <Text
+      <KeyboardAvoidingView
+        style={{
+          flex: 1,
+          backgroundColor: "black",
+        }}
+        enabled={true}
+      >
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          style={{ flex: 1 }}
+          enabled={true}
+        >
+          <View style={{ flex: 1 }}>
+            <View
               style={{
-                fontWeight: "bold",
-                fontSize: 25,
-                marginTop: "15%",
-                marginBottom: "5%",
-                color: "white",
+                flex: 1,
+
+                justifyContent: "flex-end",
+                alignItems: "center",
               }}
             >
-              Create an Account
-            </Text>
-            <Text style={{ marginVertical: 10, color: "red", fontSize: 15 }}>
-              {this.state.errorMessage}
-            </Text>
-            <View>
-              <Text style={{ fontWeight: "bold", color: "white" }}>
-                Email Address
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Email"
-                placeholderTextColor="gray"
-                onChangeText={(val) => {
-                  this.setState({ email: val });
-                }}
-                autoCapitalize="none"
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text style={{ fontWeight: "bold", color: "white" }}>
-                Username
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Username"
-                onChangeText={(val) => {
-                  this.setState({ username: val.toLowerCase() });
-                }}
-                maxLength={10}
-                placeholderTextColor="gray"
-                autoCapitalize="none"
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text style={{ fontWeight: "bold", color: "white" }}>
-                Password
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Password"
-                placeholderTextColor="gray"
-                secureTextEntry={true}
-                onChangeText={(val) => {
-                  this.setState({ password: val });
-                }}
-              ></TextInput>
-            </View>
-            <View style={{ marginVertical: "5%" }}>
-              <Text style={{ fontWeight: "bold", color: "white" }}>
-                Confirm Password
-              </Text>
-              <TextInput
-                style={{
-                  height: 40,
-                  borderColor: "white",
-                  borderWidth: 2,
-                  borderRadius: 5,
-                  marginRight: 100,
-                  marginVertical: "2%",
-                  padding: "2%",
-                  backgroundColor: "#272727",
-                  color: "white",
-                }}
-                placeholder="Password"
-                secureTextEntry={true}
-                placeholderTextColor="gray"
-                onChangeText={(val) => {
-                  this.setState({ confirmPassword: val });
-                }}
-              ></TextInput>
-            </View>
-            <View style={{ marginLeft: "15%" }}>
-              <TouchableOpacity
-                style={{
-                  backgroundColor: "#BB86FC",
-                  borderRadius: 5,
-                  height: "23%",
-                  width: "50%",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginVertical: "7%",
-                }}
-                onPress={this.handleSignUp}
-              >
-                <Text style={{ fontSize: 20 }}>SignUp</Text>
+              <TouchableOpacity onPress={this.pickImagehandler}>
+                <Thumbnail
+                  style={{ borderWidth: 1, borderColor: "white" }}
+                  large
+                  source={{
+                    uri: this.state.avatar ? this.state.avatar : PP,
+                  }}
+                />
               </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                flex: 6,
+              }}
+            >
+              <View style={{ height: 10 }}></View>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "flex-end",
+
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ width: "80%" }}>
+                  <Text style={{ color: "red", fontSize: 15 }}>
+                    {this.state.errorMessage}
+                  </Text>
+                </View>
+              </View>
+              <View style={{ height: 10 }}></View>
+              <View
+                style={{
+                  flex: 10,
+
+                  alignItems: "center",
+                }}
+              >
+                <FloatingTextError
+                  label="Email"
+                  placeholderTextColor="gray"
+                  keyboardType="email-address"
+                  onChangeText={(val) => {
+                    this.setState({ email: val });
+                  }}
+                  autoCapitalize="none"
+                  test={this.state.email}
+                ></FloatingTextError>
+                <View style={{ height: 40 }}></View>
+                <FloatingTextError
+                  label="Username"
+                  placeholderTextColor="gray"
+                  onChangeText={(val) => {
+                    this.setState({ username: val });
+                  }}
+                  autoCapitalize="none"
+                  test={this.state.username}
+                ></FloatingTextError>
+                <View style={{ height: 40 }}></View>
+                <FloatingTextError
+                  label="Password"
+                  placeholderTextColor="gray"
+                  secureTextEntry={true}
+                  onChangeText={(val) => {
+                    this.setState({ password: val });
+                  }}
+                  autoCapitalize="none"
+                  test={this.state.password}
+                ></FloatingTextError>
+                <View style={{ height: 40 }}></View>
+                <FloatingTextError
+                  label="Confirm Password"
+                  placeholderTextColor="gray"
+                  secureTextEntry={true}
+                  onChangeText={(val) => {
+                    this.setState({ confirmPassword: val });
+                  }}
+                  autoCapitalize="none"
+                  test={this.state.confirmPassword}
+                ></FloatingTextError>
+                <View style={{ height: 40 }}></View>
+                <TouchableOpacity
+                  style={{
+                    backgroundColor: "#BB86FC",
+                    borderRadius: 5,
+                    height: "8%",
+                    width: "80%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginVertical: "7%",
+                  }}
+                  onPress={this.handleSignUp}
+                >
+                  <Text style={{ fontSize: 20, fontWeight: "bold" }}>
+                    SIGN UP
+                  </Text>
+                </TouchableOpacity>
+                <View style={{ height: 40 }}></View>
+              </View>
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 }

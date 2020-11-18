@@ -8,9 +8,10 @@ import {
   Alert,
   FlatList,
 } from "react-native";
-import { Container, Content, Spinner } from "native-base";
+import { Container, Content, Spinner, Thumbnail } from "native-base";
 import fire from "../Firebase";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
+import PP from "./profileplaceholder";
 
 export default class Friends extends Component {
   _isMounted = false;
@@ -58,6 +59,7 @@ export default class Friends extends Component {
 
   async handleFriends() {
     var data = [];
+
     return await fire
       .firestore()
       .collection("USERS")
@@ -76,7 +78,11 @@ export default class Friends extends Component {
               .get()
               .then(
                 function (snap) {
-                  data.push({ username: snap.data().username, ID: snap.id });
+                  data.push({
+                    username: snap.data().username,
+                    ID: snap.id,
+                    profileUri: snap.data().profileUri,
+                  });
                 },
                 function (error) {
                   Alert.alert(error.toString());
@@ -126,24 +132,40 @@ export default class Friends extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "black" }}>
         {this.state.data ? (
           <FlatList
             data={this.state.data}
             renderItem={({ item }) => (
               <View style={styles.card}>
                 <View style={styles.cardContent}>
-                  <View style={{ flexDirection: "row" }}>
-                    <FontAwesome name="user" size={20} />
-                    <Text
-                      style={{
-                        marginLeft: "5%",
-                        fontSize: 20,
-                        fontWeight: "bold",
+                  <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.props.navigation.navigate("Profile", {
+                          ID: item.ID,
+                        });
                       }}
+                      style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                      {item.username}
-                    </Text>
+                      <Thumbnail
+                        style={{ borderWidth: 1, borderColor: "white" }}
+                        source={{
+                          uri: item.profileUri ? item.profileUri : PP,
+                        }}
+                      />
+
+                      <Text
+                        style={{
+                          marginLeft: "5%",
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          color: "white",
+                        }}
+                      >
+                        {item.username}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
 
                   <View
@@ -163,7 +185,9 @@ export default class Friends extends Component {
                     >
                       <FontAwesome name="times" size={25} color="white" />
                     </TouchableOpacity>
-                    <Text style={{ fontSize: 15 }}>Unfriend</Text>
+                    <Text style={{ fontSize: 15, color: "white" }}>
+                      Unfriend
+                    </Text>
                   </View>
                 </View>
               </View>
@@ -187,9 +211,9 @@ export default class Friends extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 6,
+    borderRadius: 10,
     elevation: 4,
-    backgroundColor: "#fff",
+    backgroundColor: "#272727",
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "#333",
     shadowOpacity: 0.5,
@@ -202,5 +226,6 @@ const styles = StyleSheet.create({
     paddingVertical: "5%",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
 });

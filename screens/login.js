@@ -8,14 +8,23 @@ import {
   TouchableOpacity,
   Pressable,
   TextInput,
+  ScrollView,
   Alert,
+  Image,
+  KeyboardAvoidingView,
 } from "react-native";
+
 import fire from "../Firebase";
+import FloatingTextBox from "./FloatingScan";
 
 export default class Login extends Component {
   state = {
     email: "",
     password: "",
+  };
+
+  _updateMasterState = (attrName, value) => {
+    this.setState({ [attrName]: value });
   };
 
   handleLogin = () => {
@@ -29,94 +38,103 @@ export default class Login extends Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
-        <View style={{ marginLeft: "10%" }}>
-          <Text
+      <KeyboardAvoidingView style={{ flex: 1 }} enabled={true}>
+        <ScrollView
+          contentContainerStyle={{ flexGrow: 1 }}
+          style={{ flex: 1, backgroundColor: "black" }}
+        >
+          <View style={{ flex: 1 }}>
+            <View
+              style={{
+                flex: 5,
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Image source={require("../assets/logo.png")} />
+            </View>
+
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}
+            >
+              <View style={{ width: "50%" }}></View>
+            </View>
+          </View>
+
+          <View
             style={{
-              fontWeight: "bold",
-              fontSize: 25,
-              marginVertical: "10%",
-              marginTop: "50%",
-              color:"white"
+              flex: 2,
+              alignItems: "center",
             }}
           >
-            LOGIN
-          </Text>
-          <View>
-            <Text style={{ fontWeight: "bold", color:"white" }}>Email Address</Text>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: "#ffffff",
-                borderWidth: 2,
-                borderRadius: 5,
-                marginRight: 100,
-                marginVertical: "2%",
-                padding: "2%",
-                backgroundColor:"#272727",
-                color:"white"
-              }}
-              placeholder="Email"
-              placeholderTextColor="gray"
+            <View style={{ marginVertical: "5%" }}>
+              <Text
+                style={{
+                  color: "white",
+                  fontSize: 25,
+                  fontWeight: "bold",
+                }}
+              >
+                LOGIN
+              </Text>
+            </View>
+            <FloatingTextBox
+              label="Email Address"
               autoCapitalize="none"
+              placeholderTextColor="gray"
+              keyboardType="email-address"
               onChangeText={(val) => {
                 this.setState({ email: val });
               }}
-            ></TextInput>
-          </View>
-          <View style={{ marginVertical: "5%" }}>
-            <Text style={{ fontWeight: "bold",color:"white"  }}>Password</Text>
-            <TextInput
-              style={{
-                height: 40,
-                borderColor: "#ffffff",
-                borderWidth: 2,
-                borderRadius: 5,
-                marginRight: 100,
-                marginVertical: "2%",
-                padding: "2%",
-                backgroundColor:"#272727",
-                color:"white"
-              }}
-              placeholder="Password"
+              test={this.state.email}
+            ></FloatingTextBox>
+            <View style={{ height: 40 }}></View>
+            <FloatingTextBox
+              label="Password"
+              autoCapitalize="none"
               placeholderTextColor="gray"
               secureTextEntry={true}
               onChangeText={(val) => {
                 this.setState({ password: val });
               }}
-            ></TextInput>
-          </View>
-          <View style={{ marginLeft: "15%" }}>
+              test={this.state.password}
+            ></FloatingTextBox>
+            <View style={{ height: 30 }}></View>
             <Text
               style={{
+                color: "skyblue",
+                fontWeight: "bold",
                 fontSize: 15,
-                textDecorationLine: "underline",
-                color: "lightblue",
-                fontWeight: "900",
               }}
               onPress={() => {
                 this.props.navigation.navigate("ForgotPassword");
               }}
             >
-              Forgot your Password?
+              Forgot Password?
             </Text>
+            <View style={{ height: 50 }}></View>
             <TouchableOpacity
               style={{
+                width: "80%",
+                height: 50,
                 backgroundColor: "#BB86FC",
-                borderRadius: 5,
-                height: "23%",
-                width: "46%",
-                justifyContent: "center",
                 alignItems: "center",
-                marginVertical: "7%",
+                justifyContent: "center",
+                borderRadius: 3,
               }}
               onPress={this.handleLogin}
             >
-              <Text style={{ fontSize: 17, fontWeight: "700" }}>SIGNIN</Text>
+              <Text style={{ fontSize: 20, fontWeight: "bold" }}>SIGN IN</Text>
             </TouchableOpacity>
+            <View style={{ height: 50 }}></View>
           </View>
-        </View>
-      </SafeAreaView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     );
   }
   1;

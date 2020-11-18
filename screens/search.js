@@ -5,13 +5,15 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  ToastAndroid,
   Alert,
   FlatList,
 } from "react-native";
-
+import { Thumbnail } from "native-base";
 import fire from "../Firebase";
 import "firebase/firestore";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
+import PP from "./profileplaceholder";
 
 export default class Search extends Component {
   _isMounted = false;
@@ -33,7 +35,7 @@ export default class Search extends Component {
         fID: uid,
       })
       .then(() => {
-        Alert.alert("Friend request sent.");
+        ToastAndroid.show("Friend request sent!", ToastAndroid.SHORT);
         this.props.navigation.goBack();
       })
       .catch((err) => {
@@ -45,8 +47,7 @@ export default class Search extends Component {
     this._isMounted = false;
   }
 
-  componentDidMount() {
-    this._isMounted = true;
+  handleRequests() {
     var docID;
     var username;
 
@@ -61,7 +62,11 @@ export default class Search extends Component {
           sub.forEach((doc) => {
             docID = doc.id;
             username = doc.data().username;
-            const x = { username: username, ID: docID };
+            const x = {
+              username: username,
+              ID: docID,
+              profileUri: doc.data().profileUri,
+            };
             data.push(x);
           });
           this.setState({
@@ -76,9 +81,14 @@ export default class Search extends Component {
       });
   }
 
+  componentDidMount() {
+    this._isMounted = true;
+    this.handleRequests();
+  }
+
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1 ,backgroundColor:"black"}}>
         {this.state.data &&
         this.state.ID != fire.auth().currentUser.uid.toString() ? (
           <FlatList
@@ -87,16 +97,32 @@ export default class Search extends Component {
               <View style={styles.card}>
                 <View style={styles.cardContent}>
                   <View style={{ flexDirection: "row" }}>
-                    <FontAwesome name="user" size={20} />
-                    <Text
-                      style={{
-                        marginLeft: "5%",
-                        fontSize: 20,
-                        fontWeight: "bold",
+                    <TouchableOpacity
+                      onPress={() => {
+                        this.props.navigation.navigate("Profile", {
+                          ID: item.ID,
+                        });
                       }}
+                      style={{ flexDirection: "row", alignItems: "center" }}
                     >
-                      {item.username}
-                    </Text>
+                      <Thumbnail
+                        style={{ borderWidth: 1, borderColor: "white" }}
+                        source={{
+                          uri: item.profileUri ? item.profileUri : PP,
+                        }}
+                      />
+
+                      <Text
+                        style={{
+                          marginLeft: "5%",
+                          fontSize: 20,
+                          fontWeight: "bold",
+                          color:"white"
+                        }}
+                      >
+                        {item.username}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
 
                   <View style={{ flexDirection: "row" }}>
@@ -110,6 +136,7 @@ export default class Search extends Component {
                           backgroundColor: "#BB86FC",
                           borderRadius: 5,
                           borderWidth: 1,
+                          borderColor:"black"
                         }}
                       >
                         <Text
@@ -148,7 +175,7 @@ export default class Search extends Component {
             style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
           >
             <Text
-              style={{ fontSize: 25, fontWeight: "bold", fontStyle: "italic" }}
+              style={{ fontSize: 25, fontWeight: "bold", fontStyle: "italic",color:"white" }}
             >
               No User found!
             </Text>
@@ -161,9 +188,9 @@ export default class Search extends Component {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 6,
+    borderRadius: 10,
     elevation: 4,
-    backgroundColor: "#fff",
+    backgroundColor: "#272727",
     shadowOffset: { width: 1, height: 1 },
     shadowColor: "#333",
     shadowOpacity: 0.5,
@@ -176,5 +203,6 @@ const styles = StyleSheet.create({
     paddingVertical: "5%",
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
 });

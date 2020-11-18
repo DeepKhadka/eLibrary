@@ -6,7 +6,9 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Alert,
+  ToastAndroid,
   FlatList,
+  Linking,
 } from "react-native";
 import {
   Container,
@@ -17,10 +19,11 @@ import {
   Icon,
   Segment,
   Content,
-  Title,
   Button,
   Spinner,
+  Toast,
 } from "native-base";
+import { Rating, AirbnbRating } from "react-native-ratings";
 import fire from "../Firebase";
 import FontAwesome from "react-native-vector-icons/FontAwesome5";
 import Card from "./item";
@@ -30,6 +33,7 @@ class PublicItems extends Component {
   state = {
     data: null,
     refreshing: false,
+    loading: true,
   };
 
   handleRefresh = () => {
@@ -42,6 +46,44 @@ class PublicItems extends Component {
       }
     );
   };
+
+  deleteItem(itemTitle) {
+    var docID;
+
+    fire
+      .firestore()
+      .collection("USERS")
+      .doc(fire.auth().currentUser.uid.toString())
+      .collection(this.props.name)
+      .where("title", "==", itemTitle)
+      .get()
+      .then((sub) => {
+        if (sub.docs.length > 0) {
+          sub.forEach((doc) => {
+            docID = doc.id;
+          });
+        }
+      })
+      .then(() => {
+        fire
+          .firestore()
+          .collection("USERS")
+          .doc(fire.auth().currentUser.uid.toString())
+          .collection(this.props.name)
+          .doc(docID)
+          .delete()
+          .then(() => {
+            Alert.alert("Successfully deleted!");
+            this.componentDidMount();
+          })
+          .catch((err) => {
+            Alert.alert(err.toString());
+          });
+      })
+      .catch((err) => {
+        Alert.alert(err.toString());
+      });
+  }
 
   changeToPrivate = (itemTitle) => {
     var docID;
@@ -71,7 +113,15 @@ class PublicItems extends Component {
             public: false,
           })
           .then(() => {
-            Alert.alert("Successfully Updated!");
+            // Alert.alert("Successfully Updated!");
+            // Toast.show({
+            //   text: "Wrong password!",
+            //   buttonText: "Okay",
+            //   type: "success",
+            // });
+            ToastAndroid.show("Successfully updated!", ToastAndroid.SHORT);
+
+            this.componentDidMount();
           })
           .catch((err) => {
             Alert.alert(err.toString());
@@ -80,6 +130,28 @@ class PublicItems extends Component {
       .catch((err) => {
         Alert.alert(err.toString());
       });
+  };
+  emptyComponent = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            fontStyle: "italic",
+            fontWeight: "bold",
+            color: "white",
+          }}
+        >
+          Nothing here, come back later...
+        </Text>
+      </View>
+    );
   };
 
   componentDidMount() {
@@ -102,6 +174,13 @@ class PublicItems extends Component {
           this.setState({
             data: data,
             refreshing: false,
+            loading: false,
+          });
+          console.log(this.state.loading);
+        } else {
+          this.setState({
+            loading: false,
+            refreshing: false,
           });
         }
       })
@@ -112,41 +191,71 @@ class PublicItems extends Component {
   }
 
   render() {
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
-        {this.state.data ? (
-          <FlatList
-            data={this.state.data}
-            renderItem={({ item }) => (
-              <Card>
-                <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                  {item.title}
+    return !this.state.loading ? (
+      <FlatList
+        data={this.state.data}
+        renderItem={({ item }) => (
+          <Card>
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>
+              {item.title}
+            </Text>
+            <Text style={{ color: "white" }}>
+              Description: {item.description}
+            </Text>
+
+            <Text style={{ color: "white" }}>Year : {item.year}</Text>
+            <View
+              style={{
+                marginVertical: "1%",
+                alignItems: "flex-start",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={{ color: "white", marginRight: "1%" }}>
+                Rating: {item.rating}
+              </Text>
+              <Rating
+                ratingCount={5}
+                readonly
+                imageSize={20}
+                startingValue={item.rating}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <TouchableOpacity
+                style={{ marginTop: "4%" }}
+                onPress={() => this.changeToPrivate(item.title)}
+              >
+                <Text style={{ fontSize: 15, color: "#009BFF" }}>
+                  Make Private
                 </Text>
-                <Text>Description: {item.description}</Text>
-                <Text>Year : {item.year}</Text>
-                <TouchableOpacity
-                  style={{ marginTop: "4%" }}
-                  onPress={() => this.changeToPrivate(item.title)}
-                >
-                  <Text style={{ fontSize: 15, color: "#009BFF" }}>
-                    Make Private
-                  </Text>
-                </TouchableOpacity>
-              </Card>
-            )}
-            keyExtractor={(item) => item.title}
-            extraData={this.state.data}
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleRefresh}
-          />
-        ) : (
-          <Container>
-            <Content>
-              <Spinner color="green" />
-            </Content>
-          </Container>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ marginTop: "4%", marginRight: "5%" }}
+                onPress={() => this.deleteItem(item.title)}
+              >
+                <Text style={{ fontSize: 15, color: "red" }}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
         )}
-      </SafeAreaView>
+        keyExtractor={(item) => item.title}
+        extraData={this.state.data}
+        refreshing={this.state.refreshing}
+        onRefresh={this.handleRefresh}
+        ListEmptyComponent={this.emptyComponent}
+      />
+    ) : (
+      <Container style={{ backgroundColor: "black" }}>
+        <Content>
+          <Spinner color="green" />
+        </Content>
+      </Container>
     );
   }
 }
@@ -155,6 +264,7 @@ class PrivateItems extends Component {
   state = {
     data: null,
     refreshing: false,
+    loading: true,
   };
 
   // showEmpty = () => {
@@ -173,12 +283,75 @@ class PrivateItems extends Component {
     this.setState(
       {
         refreshing: true,
+        loading: true,
       },
       () => {
         this.componentDidMount();
       }
     );
   };
+
+  emptyComponent = () => {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 20,
+            fontStyle: "italic",
+            fontWeight: "bold",
+            color: "white",
+          }}
+        >
+          Nothing here, come back later...
+        </Text>
+      </View>
+    );
+  };
+
+  deleteItem(itemTitle) {
+    var docID;
+
+    fire
+      .firestore()
+      .collection("USERS")
+      .doc(fire.auth().currentUser.uid.toString())
+      .collection(this.props.name)
+      .where("title", "==", itemTitle)
+      .get()
+      .then((sub) => {
+        if (sub.docs.length > 0) {
+          sub.forEach((doc) => {
+            docID = doc.id;
+          });
+        }
+      })
+      .then(() => {
+        fire
+          .firestore()
+          .collection("USERS")
+          .doc(fire.auth().currentUser.uid.toString())
+          .collection(this.props.name)
+          .doc(docID)
+          .delete()
+          .then(() => {
+            ToastAndroid.show("Successfully deleted!", ToastAndroid.SHORT);
+
+            this.componentDidMount();
+          })
+          .catch((err) => {
+            Alert.alert(err.toString());
+          });
+      })
+      .catch((err) => {
+        Alert.alert(err.toString());
+      });
+  }
 
   changeToPublic = (itemTitle) => {
     var docID;
@@ -208,7 +381,11 @@ class PrivateItems extends Component {
             public: true,
           })
           .then(() => {
-            Alert.alert("Successfully Updated!");
+            ToastAndroid.show("Successfully updated!", ToastAndroid.SHORT);
+            this.setState({
+              loading: true,
+            });
+            this.componentDidMount();
           })
           .catch((err) => {
             Alert.alert(err.toString());
@@ -240,6 +417,12 @@ class PrivateItems extends Component {
           this.setState({
             data: data,
             refreshing: false,
+            loading: false,
+          });
+        } else {
+          this.setState({
+            loading: false,
+            refreshing: false,
           });
         }
       })
@@ -250,41 +433,70 @@ class PrivateItems extends Component {
   }
 
   render() {
-    return (
-      <SafeAreaView style={{ flex: 1 }}>
-        {this.state.data ? (
-          <FlatList
-            data={this.state.data}
-            renderItem={({ item }) => (
-              <Card>
-                <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                  {item.title}
+    return !this.state.loading ? (
+      <FlatList
+        data={this.state.data}
+        renderItem={({ item }) => (
+          <Card>
+            <Text style={{ fontSize: 20, fontWeight: "bold", color: "white" }}>
+              {item.title}
+            </Text>
+            <Text style={{ color: "white" }}>
+              Description: {item.description}
+            </Text>
+            <Text style={{ color: "white" }}>Year : {item.year}</Text>
+            <View
+              style={{
+                marginVertical: "1%",
+                alignItems: "flex-start",
+                flexDirection: "row",
+              }}
+            >
+              <Text style={{ color: "white", marginRight: "1%" }}>
+                Rating: {item.rating}
+              </Text>
+              <Rating
+                ratingCount={5}
+                readonly
+                imageSize={20}
+                startingValue={item.rating}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <TouchableOpacity
+                style={{ marginTop: "4%" }}
+                onPress={() => this.changeToPublic(item.title)}
+              >
+                <Text style={{ fontSize: 15, color: "#009BFF" }}>
+                  Make Public
                 </Text>
-                <Text>Description: {item.description}</Text>
-                <Text>Year : {item.year}</Text>
-                <TouchableOpacity
-                  style={{ marginTop: "4%" }}
-                  onPress={() => this.changeToPublic(item.title)}
-                >
-                  <Text style={{ fontSize: 15, color: "#009BFF" }}>
-                    Make Public
-                  </Text>
-                </TouchableOpacity>
-              </Card>
-            )}
-            keyExtractor={(item) => item.title}
-            extraData={this.state.data}
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleRefresh}
-          />
-        ) : (
-          <Container>
-            <Content>
-              <Spinner color="green" />
-            </Content>
-          </Container>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ marginTop: "4%", marginRight: "5%" }}
+                onPress={() => this.deleteItem(item.title)}
+              >
+                <Text style={{ fontSize: 15, color: "red" }}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </Card>
         )}
-      </SafeAreaView>
+        keyExtractor={(item) => item.title}
+        extraData={this.state.data}
+        refreshing={this.state.refreshing}
+        onRefresh={this.handleRefresh}
+        ListEmptyComponent={this.emptyComponent}
+      />
+    ) : (
+      <Container style={{ backgroundColor: "black" }}>
+        <Content>
+          <Spinner color="green" />
+        </Content>
+      </Container>
     );
   }
 }
@@ -305,7 +517,7 @@ export default class Library extends Component {
 
   render() {
     return (
-      <Container>
+      <Container style={{ backgroundColor: "black" }}>
         <Header
           style={{
             justifyContent: "flex-start",
