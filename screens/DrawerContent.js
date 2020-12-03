@@ -60,6 +60,16 @@ export function DrawerContent(props) {
               props.navigation.navigate("Friends");
             }}
           />
+          <DrawerItem
+            icon={({ color, size }) => (
+              <FontAwesome name="filter" color="white" size={size} />
+            )}
+            label="Filter Media"
+            labelStyle={{ color: "white", fontSize: 15, fontWeight: "bold" }}
+            onPress={() => {
+              props.navigation.navigate("searchMedia");
+            }}
+          />
         </Drawer.Section>
       </DrawerContentScrollView>
       <Drawer.Section style={styles.bottomDrawerSection}>

@@ -13,11 +13,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Modal,
+  Image,
 } from "react-native";
 import { Thumbnail } from "native-base";
 
 import fire from "../Firebase";
 import "firebase/firestore";
+import "firebase/storage";
 
 import * as ImagePicker from "expo-image-picker";
 import PP from "./profileplaceholder";
@@ -81,10 +83,13 @@ export default class Signup extends Component {
             })
             .catch((err) => {
               Alert.alert(err.toString());
+              console.error(err);
             });
         })
+
         .catch((err) => {
           Alert.alert(err.toString());
+          console.error(err);
         });
     }
   };
@@ -123,7 +128,8 @@ export default class Signup extends Component {
         }
       })
       .catch((err) => {
-        Alert.alert(err.toString());
+        // Alert.alert(err.toString());
+        console.error(err);
       });
   };
 
@@ -151,9 +157,8 @@ export default class Signup extends Component {
               }}
             >
               <TouchableOpacity onPress={this.pickImagehandler}>
-                <Thumbnail
-                  style={{ borderWidth: 1, borderColor: "white" }}
-                  large
+                <Image
+                  style={styles.image}
                   source={{
                     uri: this.state.avatar ? this.state.avatar : PP,
                   }}
@@ -261,5 +266,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "black",
+  },
+  image: {
+    width: 140,
+    height: 140,
+    borderRadius: 140 / 2,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "white",
+    marginTop: 20,
   },
 });

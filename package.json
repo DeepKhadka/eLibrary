@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@react-native-community/masked-view": "0.1.10",
+    "@react-native-picker/picker": "^1.9.4",
     "@react-navigation/bottom-tabs": "^5.9.0",
     "@react-navigation/drawer": "^5.9.3",
     "@react-navigation/material-top-tabs": "^5.2.19",
@@ -36,7 +37,8 @@
     "react-native-safe-area-context": "3.1.4",
     "react-native-screens": "~2.10.1",
     "react-native-tab-view": "^2.15.2",
-    "react-native-vector-icons": "^7.1.0"
+    "react-native-vector-icons": "^7.1.0",
+    "rn-range-slider": "^2.0.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",

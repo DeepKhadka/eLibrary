@@ -14,7 +14,7 @@ import {
   Image,
 } from "react-native";
 
-import { Container, Thumbnail, Content, Spinner } from "native-base";
+import { Container, Content, Spinner } from "native-base";
 
 import Card from "./item";
 
@@ -24,7 +24,7 @@ import FontAwesome from "react-native-vector-icons/FontAwesome5";
 
 import * as ImagePicker from "expo-image-picker";
 import PP from "./profileplaceholder";
-import { Rating, AirbnbRating } from "react-native-ratings";
+import { Rating } from "react-native-ratings";
 
 export default class Profile extends Component {
   _isMounted = false;
@@ -113,6 +113,9 @@ export default class Profile extends Component {
           sub.forEach((doc) => {
             const x = doc.data();
             data.push(x);
+            this.setState({
+              game: this.state.game + 1,
+            });
           });
           this.setState({
             gameData: data,
@@ -146,6 +149,9 @@ export default class Profile extends Component {
           sub.forEach((doc) => {
             const x = doc.data();
             data.push(x);
+            this.setState({
+              movies: this.state.movies + 1,
+            });
           });
           this.setState({
             movieData: data,
@@ -178,6 +184,9 @@ export default class Profile extends Component {
           sub.forEach((doc) => {
             const x = doc.data();
             data.push(x);
+            this.setState({
+              music: this.state.music + 1,
+            });
           });
           this.setState({
             musicData: data,
@@ -210,6 +219,9 @@ export default class Profile extends Component {
           sub.forEach((doc) => {
             const x = doc.data();
             data.push(x);
+            this.setState({
+              books: this.state.books + 1,
+            });
           });
           if (this._isMounted) {
             this.setState({
@@ -306,9 +318,9 @@ export default class Profile extends Component {
         if (sub.docs.length > 0) {
           sub.forEach((doc) => {
             if (this._isMounted) {
-              this.setState({
-                game: this.state.game + 1,
-              });
+              // this.setState({
+              //   game: this.state.game + 1,
+              // });
             }
           });
         }
@@ -334,9 +346,9 @@ export default class Profile extends Component {
         if (sub.docs.length > 0) {
           sub.forEach((doc) => {
             if (this._isMounted) {
-              this.setState({
-                movies: this.state.movies + 1,
-              });
+              // this.setState({
+              //   movies: this.state.movies + 1,
+              // });
             }
           });
         }
@@ -361,9 +373,9 @@ export default class Profile extends Component {
         if (sub.docs.length > 0) {
           sub.forEach((doc) => {
             if (this._isMounted) {
-              this.setState({
-                music: this.state.music + 1,
-              });
+              // this.setState({
+              //   music: this.state.music + 1,
+              // });
             }
           });
         }
@@ -389,9 +401,9 @@ export default class Profile extends Component {
         if (sub.docs.length > 0) {
           sub.forEach((doc) => {
             if (this._isMounted) {
-              this.setState({
-                books: this.state.books + 1,
-              });
+              // this.setState({
+              //   books: this.state.books + 1,
+              // });
             }
           });
         }
@@ -446,18 +458,16 @@ export default class Profile extends Component {
           <View style={{ alignItems: "center" }}>
             {this.props.route.params.ID == "" ? (
               <TouchableOpacity onPress={this.pickImagehandler}>
-                <Thumbnail
-                  style={{ borderWidth: 1, borderColor: "white" }}
-                  large
+                <Image
+                  style={styles.image}
                   source={{
                     uri: this.state.avatar ? this.state.avatar : PP,
                   }}
                 />
               </TouchableOpacity>
             ) : (
-              <Thumbnail
-                style={{ borderWidth: 1, borderColor: "white" }}
-                large
+              <Image
+                style={styles.image}
                 source={{
                   uri: this.state.avatar ? this.state.avatar : PP,
                 }}
@@ -608,5 +618,13 @@ const styles = StyleSheet.create({
     fontSize: 25,
     marginHorizontal: "2%",
     color: "white",
+  },
+  image: {
+    width: 120,
+    height: 120,
+    borderRadius: 120 / 2,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "white",
   },
 });

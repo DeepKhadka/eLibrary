@@ -173,6 +173,7 @@ export default class Home extends Component {
     this.componentDidMount();
   };
 
+
   render() {
     const actions = [
       {
@@ -241,7 +242,7 @@ export default class Home extends Component {
                   });
                 }}
               />
-              <Icon name="ios-search" />
+              <Icon name="ios-search" onPress={this.allRATEDMusic} />
             </Item>
           </Header>
 

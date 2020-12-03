@@ -23,6 +23,7 @@ import Search from "./screens/search";
 import Requests from "./screens/requests";
 import Friends from "./screens/friends";
 import Profile from "./screens/profile";
+import searchMedia from "./screens/searchMedia";
 
 import fire from "./Firebase";
 import { LogBox } from "react-native";
@@ -47,6 +48,29 @@ handleSignout = () => {
 };
 
 handleDeleteAccount = () => {
+  var userID = fire.auth().currentUser.uid.toString();
+
+  fire
+    .firestore()
+    .collectionGroup("CONNECTED")
+    .where("fID", "==", userID)
+    .get()
+    .then((querySnapshot) => {
+      if (!querySnapshot.empty) {
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete();
+        });
+      }
+    })
+    .then(() => {
+      fire
+        .firestore()
+        .collectionGroup("PENDING")
+        .where("fID", "==", userID)
+        .get()
+        .then((querySnapshot) => {});
+    });
+
   fire
     .auth()
     .currentUser.delete()
@@ -286,7 +310,11 @@ function homeStack() {
           children={addItemsManuallyStack}
           options={{
             headerTintColor: "#ffffff",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1  },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
           }}
         />
         <Stack.Screen
@@ -319,7 +347,11 @@ function homeStack() {
           component={Requests}
           options={{
             headerTintColor: "#ffffff",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1  },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
           }}
         />
         <Stack.Screen
@@ -327,7 +359,11 @@ function homeStack() {
           component={Friends}
           options={{
             headerTintColor: "#ffffff",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1  },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
           }}
         />
         <Stack.Screen
@@ -337,6 +373,15 @@ function homeStack() {
           options={{
             headerTintColor: "#ffffff",
             headerStyle: { backgroundColor: "black" },
+          }}
+        />
+        <Stack.Screen
+          name="searchMedia"
+          component={searchMedia}
+          options={{
+            headerTintColor: "#ffffff",
+            headerStyle: { backgroundColor: "black" },
+            headerTitle: "Filter Media",
           }}
         />
       </Stack.Navigator>
@@ -351,7 +396,11 @@ function loginStack() {
         <Stack.Screen
           options={{
             headerTitle: "Welcome",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1 },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
             headerTintColor: "#ffffff",
             headerTitleStyle: { alignSelf: "center" },
           }}
@@ -361,7 +410,11 @@ function loginStack() {
         <Stack.Screen
           options={{
             headerTitle: "LOGIN",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1  },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
             headerTintColor: "#ffffff",
           }}
           name="Login"
@@ -370,7 +423,11 @@ function loginStack() {
         <Stack.Screen
           options={{
             headerTitle: "SIGNUP",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1  },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
             headerTintColor: "#ffffff",
           }}
           name="Signup"
@@ -379,7 +436,11 @@ function loginStack() {
         <Stack.Screen
           options={{
             headerTitle: "Forgot Password",
-            headerStyle: { backgroundColor: "black",borderBottomColor:"#272727",borderBottomWidth:1  },
+            headerStyle: {
+              backgroundColor: "black",
+              borderBottomColor: "#272727",
+              borderBottomWidth: 1,
+            },
             headerTintColor: "#ffffff",
           }}
           name="ForgotPassword"

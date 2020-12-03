@@ -49,6 +49,17 @@ export default class Games extends Component {
         errorMessage: "Rating cannot be less than 1.",
       });
     } else {
+      // var url =
+      //   "https://api.unsplash.com/search/photos/?query=" +
+      //   this.state.title.trim() +
+      //   "&orientation=squarish&client_id=hy9h_XdQo4dQ52lk9FEm3Flq0FEya4JUHjKj3SMug20";
+
+      // fetch(url)
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     console.log(data);
+      //   });
+
       fire
         .firestore()
         .collection("USERS")
@@ -146,7 +157,6 @@ export default class Games extends Component {
               <FloatingTextError
                 test={this.state.company}
                 label="Company"
-                value={this.state.company}
                 placeholderTextColor="gray"
                 onChangeText={(val) => {
                   this.setState({

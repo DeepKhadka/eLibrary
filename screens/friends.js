@@ -113,11 +113,11 @@ export default class Friends extends Component {
 
   emptyComponent = () => {
     return (
-      <View style={{ flex: 1, alignItems: "center" }}>
-        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold" }}>
+      <View style={{ flex:1, alignItems: "center",justifyContent:"center" }}>
+        <Text style={{ fontSize: 20, fontStyle: "italic", fontWeight: "bold",color:"white" }}>
           Nothing here, come back later...
         </Text>
-      </View>
+       </View>
     );
   };
 
